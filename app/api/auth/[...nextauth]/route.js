@@ -1,19 +1,21 @@
-import NextAuth from "next-auth";
-import GithubProvider from "next-auth/providers/github";
-import mongoose from "mongoose";
-import User from "@/app/models/User";
-import connectDB from "@/app/db/connectDB";
+import NextAuth from "next-auth"
+import GithubProvider from "next-auth/providers/github"
+import User from "@/app/models/User"
+import connectDB from "@/app/db/connectDB"
 
-const authOptions = {
+const authOptions = NextAuth({
+  // Configure one or more authentication providers
   providers: [
     GithubProvider({
       clientId: process.env.GITHUB_ID,
       clientSecret: process.env.GITHUB_SECRET,
     }),
+    // ...add more providers here
   ],
 
   callbacks: {
     async signIn({ user, account, profile, email, credentials }) {
+      // connect to database moongoose
       await connectDB();
 
       if (account.provider === "github") {
@@ -29,18 +31,18 @@ const authOptions = {
         }
         return true;
       }
-      return false;
     },
     async session({ session, user, token }) {
       await connectDB();
 
       const dbUser = await User.findOne({ email: session.user.email });
+      // console.log("dbUser", dbUser);
       if (dbUser) {
         session.user.name = dbUser.username;
       }
       return session;
     },
-  },
-};
+  }
+});
 
-export default NextAuth(authOptions);
+export { authOptions as GET, authOptions as POST }
