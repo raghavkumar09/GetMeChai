@@ -1,8 +1,5 @@
 
-import React, {useEffect} from 'react'
-import Image from 'next/image'
-import { useSession, signIn, signOut } from "next-auth/react"
-import { useRouter } from 'next/navigation'
+import React from 'react'
 import PaymentPage from '@/components/PaymentPage'
 import User from '../models/User'
 import { notFound } from 'next/navigation'
